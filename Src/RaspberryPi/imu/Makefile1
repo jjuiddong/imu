@@ -1,0 +1,25 @@
+CC = g++
+CFLAGS = -g -std=c++14 -Wall -pedantic -pthread -Wno-unused-variable -Wno-unused-function -Wno-sign-compare -Wno-conversion-null -Wno-reorder -Wno-delete-non-virtual-dtor -Wno-switch -Wno-pointer-arith -Wno-pedantic -Wno-format -fpermissive -fconcepts-ts
+LDFLAGS	= -L/usr/local/lib
+LDLIBS = -lwiringPi
+TARGET = main
+OBJECTS = \
+main.o \
+mpuXX50.o \
+hmc5883l.o \
+serial.o \
+imu.o \
+
+all : $(TARGET)
+
+.cpp.o :
+	$(CC) $(CFLAGS) $(LDFLAGS) $(LDLIBS) -c $< -o $@
+
+$(TARGET) : $(OBJECTS)
+	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS) $(LDLIBS) 
+
+clean :
+	rm *.o
+
+cleanall :
+	rm -rf *.o $(TARGET)

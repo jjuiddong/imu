@@ -1,0 +1,57 @@
+
+#include "../../stdafx.h"
+#include "ray.h"
+
+
+using namespace common;
+
+Ray::Ray()
+{
+}
+
+Ray::Ray(const Vector3 &_orig, const Vector3 &_dir)
+	: orig(_orig), dir(_dir)
+{
+}
+
+Ray::Ray(const int x, const int y, const int screenWidth, const int screenHeight,  
+	const Matrix44 &matProj, const Matrix44 &matView)
+{
+	Create(x, y, screenWidth, screenHeight, matProj, matView);
+}
+
+
+//-----------------------------------------------------------------------------//
+// ��ũ����ǥ x,y�� proj, view����� ���� view���� ��ǥ��, pick�� ��ǥ�� ��´�.
+//-----------------------------------------------------------------------------//
+void Ray::Create( const int nX, const int nY, const int width, const int height,  
+	const Matrix44 &matProj, const Matrix44 &matView )
+{
+	float x =  ( (nX * 2.0f / width  ) - 1.0f );
+	float y = -( (nY * 2.0f / height) - 1.0f );
+
+	Vector3 v;
+	v.x = ( x - matProj._31 ) / matProj._11;
+	v.y = ( y - matProj._32 ) / matProj._22;
+	v.z =  1.0f;
+
+	Matrix44 m = matView.Inverse();
+
+	dir.x = v.x * m._11 + v.y * m._21 + v.z * m._31;
+	dir.y = v.x * m._12 + v.y * m._22 + v.z * m._32;
+	dir.z = v.x * m._13 + v.y * m._23 + v.z * m._33;
+	dir.Normalize();
+
+	orig.x = m._41;
+	orig.y = m._42;
+	orig.z = m._43;
+}
+
+
+// Ray�� pos ���� �Ÿ��� �����Ѵ�.
+// �ִ� �Ÿ��� �����Ѵ�. (Ray�� �������� ������ �������� �Ÿ�)
+float Ray::Distance(const Vector3 &pos)
+{
+	const Line line(dir, orig, 1000.f);
+	return line.GetDistance(pos);
+}
