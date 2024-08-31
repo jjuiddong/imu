@@ -80,11 +80,19 @@ bool cImu::Update(const float dt)
 		m_initGravityV = gravityV;
 
 		const Plane plane(gravityV, 0.f);
+		const Vector3 forward = Vector3(1, 0, 0);
+		const Vector3 left = Vector3(0, 1, 0);
 		const Vector3 v0 = plane.Projection(magV).Normal();
-		const Vector3 v1 = plane.Projection(Vector3(1,0,0)).Normal();
-		const Vector3 v2 = plane.Projection(Vector3(0, 1, 0)).Normal();
-		m_compassAngle1 = acos(v0.DotProduct(v1));
-		m_compassAngle2 = -acos(v0.DotProduct(v2));
+		const Vector3 v1 = plane.Projection(forward).Normal();
+		const Vector3 v2 = plane.Projection(left).Normal();
+		float a1 = acos(v0.DotProduct(v1));
+		float a2 = acos(v0.DotProduct(v2));
+		if (forward.CrossProduct(magV).Normal().DotProduct(gravityV) < 0.f)
+			a1 = -a1;
+		if (left.CrossProduct(magV).Normal().DotProduct(gravityV) < 0.f)
+			a2 = -a2;
+		m_compassAngle1 = a1;
+		m_compassAngle2 = a2;
 	}
 
 	m_gbuffer = (gravityV * (1.f / LPF_SIZE)) + (m_gbuffer * ((float)(LPF_SIZE-1) / LPF_SIZE));
@@ -198,9 +206,11 @@ bool cImu::CalcYawAngle(const float deltaSeconds)
 	const Vector3 mv = magV;
 
 	const Plane plane(gv, 0.f);
+	const Vector3 forward(1, 0, 0);
+	const Vector3 left(0, 1, 0);
 	const Vector3 v0 = plane.Projection(mv).Normal();
-	const Vector3 v1 = (Vector3(1, 0, 0) * irot).Normal();
-	const Vector3 v2 = (Vector3(0, 1, 0) * irot).Normal();
+	const Vector3 v1 = (forward * irot).Normal();
+	const Vector3 v2 = (left * irot).Normal();
 
 	const float d1 = gv.DotProduct(v1);
 	if (abs(d1) > 0.5f)
