@@ -172,7 +172,7 @@ const Plane Plane::operator * (const Matrix44 &rhs)
 }
 
 
-// ��鿡 �ݻ�Ǵ� ��ȯ ����� �����Ѵ�.
+// 평면에 반사되는 변환 행렬을 리턴한다.
 Matrix44 Plane::GetReflectMatrix()
 {
 	Matrix44 reflect;
@@ -185,4 +185,12 @@ Matrix44 Plane::GetReflectMatrix()
 	XMStoreFloat4x4((XMFLOAT4X4*)&reflect, m);
 #endif
 	return reflect;
+}
+
+
+// projection pos to plane
+Vector3 Plane::Projection(const Vector3& pos) const
+{
+	const float d = Distance(pos);
+	return pos + N * -d;
 }
