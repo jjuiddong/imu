@@ -100,7 +100,7 @@ struct sIMUData
 	short rawAcc[3]; // accelerometer raw data
 	short rawMag[3]; // compass raw data
 	float temp; // The temperature in Celsius degrees.
-	float gyr[3]; // Raw angular rate from gyroscope in rad/s.
+	float gyr[3]; // Raw angular rate from gyroscope in degree/s.
 	float acc[3]; // Raw data from accelerometer in G's.
 	float mag[3]; // Raw data from compass in uT.
 	float quat[4]; // Quaternion representation of IMU orientation.
